@@ -10,6 +10,9 @@ struct FaceDetect: ParsableCommand {
   @Flag(help:"Print file names before running face detection")
   var verbose = false
 
+  @Flag(help:"Quit running if a face detection fails")
+  var quitOnError = false
+
   mutating func run() throws {
     for path in inputImages {
       var u = URL(fileURLWithPath: path)
@@ -22,7 +25,7 @@ struct FaceDetect: ParsableCommand {
         }
         print(output)
       }
-      catch {
+      catch let e as DetectionError {
         // wow, this is allowed
         final class StandardErrorOutputStream: TextOutputStream {
             func write(_ string: String) {
@@ -31,8 +34,11 @@ struct FaceDetect: ParsableCommand {
         }
         var outputStream = StandardErrorOutputStream()
 
-        print("Quitting, after an error running face detection on: \(path).", to: &outputStream)
-        Foundation.exit(Foundation.EXIT_FAILURE)
+        print("Error running face detection on: \(path).", to: &outputStream)
+        print("  this is the error: \(e)")
+        if self.quitOnError {
+          Foundation.exit(Foundation.EXIT_FAILURE)
+        }
       }
     }
   }
