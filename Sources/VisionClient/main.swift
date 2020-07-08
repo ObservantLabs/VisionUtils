@@ -10,7 +10,7 @@ struct FaceDetect: ParsableCommand {
   @Flag(help:"Print file names before running face detection")
   var verbose = false
 
-  @Flag(help:"Quit running if a face detection fails")
+  @Flag(help:"Quit running if a face detection generates an error")
   var quitOnError = false
 
   mutating func run() throws {
