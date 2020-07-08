@@ -27,6 +27,10 @@ let package = Package(
     .testTarget(
       name: "VisionUtilsTests",
       dependencies: ["VisionUtils"],
-      resources:[.process("soccerFans.jpg")]),
+      resources:[
+        .process("soccerFans.jpg")
+        ,        .process("potatoes.jpg")
+
+      ]),
   ]
 )

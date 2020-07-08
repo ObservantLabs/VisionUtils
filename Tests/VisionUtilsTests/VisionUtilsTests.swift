@@ -21,13 +21,28 @@ final class VisionUtilsTests: XCTestCase {
       return
     }
     do {
-      let result = try faceDetect(image: imageURL)
+      let result:String = try faceDetect(image: imageURL)
       print(result)
     }
     catch {
       XCTFail("error trying to run face detection")
     }
   }
+
+  func testNoFaceDetected() {
+    guard let imageURL = Bundle.module.url(forResource: "potatoes", withExtension: "jpg") else {
+      XCTFail("Could not find required test image to run unit tests")
+      return
+    }
+    do {
+      let result:String = try faceDetect(image: imageURL)
+      print(result)
+    }
+    catch {
+      XCTFail("error trying to run face detection")
+    }
+  }
+
   static var allTests = [
     ("testExample", testExample),
   ]

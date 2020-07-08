@@ -9,7 +9,7 @@ internal struct DummyStruct {
   var text:String = "Hello, world"
 }
 
-enum DetectionError : Error {
+public enum DetectionError : Error {
   /// Apple API reports an error (not just no face) during face detection
   case appleErrorDetection(error:NSError)
   /// Apple API violates its contract and returns an unexpected VNObservation subtype which is not VNFaceObsercation
@@ -24,6 +24,29 @@ enum DetectionError : Error {
 /// - Parameter image: URL to an image
 /// - Returns: String with a JSON array with face detection results
 public func faceDetect(image:URL) throws -> String
+{
+  let faceDetectionObservations:[VNFaceObservation] = try faceDetect(image: image)
+  let jsonEncoder = JSONEncoder()
+  let jsons = try faceDetectionObservations.map {
+    (vnfo:VNFaceObservation) -> String in
+    guard let d = try? jsonEncoder.encode(vnfo) else {
+      throw DetectionError.jsonEncodingError
+    }
+    guard let s = String(data: d, encoding: .utf8) else {
+      // Apple returned JSON Data which cannot be encoded to UFT8
+      throw DetectionError.appleErrorMisc
+    }
+    return s
+  }
+
+  return "[" + jsons.joined(separator: ",\n") + "]"
+}
+
+/// Synchronously runs face detection only and returns [VNFaceObservation]
+/// - Parameter image: file URL of an image
+/// - Throws: DetectionError
+/// - Returns: an `Array<VNFaceObservation>`
+public func faceDetect(image:URL) throws -> [VNFaceObservation]
 {
   // detect faces
   let fdRequestHandler = VNSequenceRequestHandler()
@@ -44,21 +67,6 @@ public func faceDetect(image:URL) throws -> String
   guard let faceDetectionObservations = fdRequest.results as? [VNFaceObservation] else {
     throw DetectionError.appleErrorObservationType
   }
-
-  let jsonEncoder = JSONEncoder()
-  let jsons = try faceDetectionObservations.map {
-    (vnfo:VNFaceObservation) -> String in
-    guard let d = try? jsonEncoder.encode(vnfo) else {
-      throw DetectionError.jsonEncodingError
-    }
-    guard let s = String(data: d, encoding: .utf8) else {
-      // Apple returned JSON Data which cannot be encoded to UFT8
-      throw DetectionError.appleErrorMisc
-    }
-    return s
-  }
-
-  return "[" + jsons.joined(separator: ",\n") + "]"
+  return faceDetectionObservations
 }
-
 
