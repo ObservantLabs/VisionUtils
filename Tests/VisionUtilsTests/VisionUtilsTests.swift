@@ -6,7 +6,7 @@ final class VisionUtilsTests: XCTestCase {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(VisionUtils().text, "Hello, World!")
+        XCTAssertEqual(DummyStruct().text, "Hello, World!")
     }
 
     static var allTests = [
