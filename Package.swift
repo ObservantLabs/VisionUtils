@@ -13,10 +13,14 @@ let package = Package(
     .library(
       name: "VisionUtils",
       targets: ["VisionUtils"]),
+
+    .executable(name: "runVision",
+                targets: ["VisionClient"])
   ],
   dependencies: [
     // Dependencies declare other packages that this package depends on.
     // .package(url: /* package url */, from: "1.0.0"),
+    .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "0.2.0")),
   ],
   targets: [
     // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -24,6 +28,7 @@ let package = Package(
     .target(
       name: "VisionUtils",
       dependencies: []),
+
     .testTarget(
       name: "VisionUtilsTests",
       dependencies: ["VisionUtils"],
@@ -32,5 +37,19 @@ let package = Package(
         ,        .process("potatoes.jpg")
 
       ]),
+
+    .target(name: "VisionClient",
+            dependencies: [
+              "VisionUtils",
+              .product(name: "ArgumentParser", package: "swift-argument-parser")],
+            path: nil,
+            exclude: [],
+            sources: nil,
+            resources: nil,
+            publicHeadersPath: nil,
+            cSettings: nil,
+            cxxSettings: nil,
+            swiftSettings: nil,
+            linkerSettings: nil)
   ]
 )
