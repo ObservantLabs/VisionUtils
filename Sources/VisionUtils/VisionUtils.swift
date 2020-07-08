@@ -17,12 +17,12 @@ enum DetectionError : Error {
   /// Apple API violates its contract in some other way
   case appleErrorMisc
   /// Programming error in our own implementation of  Encodable for VNFaceObservation. Should never happen
-  case encodingError
+  case jsonEncodingError
 }
 
 /// Synchronously runs face detection only and returns JSON-encoded results
 /// - Parameter image: URL to an image
-/// - Returns: <#description#>
+/// - Returns: String with a JSON array with face detection results
 public func faceDetect(image:URL) throws -> String
 {
   // detect faces
@@ -49,7 +49,7 @@ public func faceDetect(image:URL) throws -> String
   let jsons = try faceDetectionObservations.map {
     (vnfo:VNFaceObservation) -> String in
     guard let d = try? jsonEncoder.encode(vnfo) else {
-      throw DetectionError.encodingError
+      throw DetectionError.jsonEncodingError
     }
     guard let s = String(data: d, encoding: .utf8) else {
       // Apple returned JSON Data which cannot be encoded to UFT8
