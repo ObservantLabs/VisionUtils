@@ -14,8 +14,8 @@ import Vision
 extension VNFaceObservation : Encodable
 {
   enum CodingKeys: String, CodingKey {
+//    case uuid # we ignore uuid
     // properties belonging to any VNObservation
-    case uuid
     case confidence
     // this property belonging to any VNDetectedObjectObsesrvation
     case boundingBox
@@ -23,7 +23,7 @@ extension VNFaceObservation : Encodable
   }
   public func encode(to encoder:Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
-    try container.encode(uuid,forKey:.uuid)
+//    try container.encode(uuid,forKey:.uuid)
     try container.encode(confidence,forKey:.confidence)
     try container.encode(boundingBox,forKey:.boundingBox)
   }

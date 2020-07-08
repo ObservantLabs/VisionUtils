@@ -35,7 +35,7 @@ struct FaceDetect: ParsableCommand {
         var outputStream = StandardErrorOutputStream()
 
         print("Error running face detection on: \(path).", to: &outputStream)
-        print("  this is the error: \(e)")
+        print("  this is the error: \(e)", to: &outputStream)
         if self.quitOnError {
           Foundation.exit(Foundation.EXIT_FAILURE)
         }
