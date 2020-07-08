@@ -1,4 +1,6 @@
 import Foundation
+import Vision
+
 import XCTest
 @testable import VisionUtils
 
@@ -15,7 +17,7 @@ final class VisionUtilsTests: XCTestCase {
     XCTAssert(imageURL != nil)
   }
 
-  func testFaceDetect() {
+  func testFaceJSOSN() {
     guard let imageURL = Bundle.module.url(forResource: "soccerFans", withExtension: "jpg") else {
       XCTFail("Could not find required test image to run unit tests")
       return
@@ -29,7 +31,7 @@ final class VisionUtilsTests: XCTestCase {
     }
   }
 
-  func testNoFaceDetected() {
+  func testNoFacesJSON() {
     guard let imageURL = Bundle.module.url(forResource: "potatoes", withExtension: "jpg") else {
       XCTFail("Could not find required test image to run unit tests")
       return
@@ -37,6 +39,35 @@ final class VisionUtilsTests: XCTestCase {
     do {
       let result:String = try faceDetect(image: imageURL)
       print(result)
+    }
+    catch {
+      XCTFail("error trying to run face detection")
+    }
+  }
+
+
+  func testFacesDetect() {
+    guard let imageURL = Bundle.module.url(forResource: "soccerFans", withExtension: "jpg") else {
+      XCTFail("Could not find required test image to run unit tests")
+      return
+    }
+    do {
+      let results:[VNFaceObservation] = try faceDetect(image: imageURL)
+      XCTAssert(results.count == 2)
+    }
+    catch {
+      XCTFail("error trying to run face detection")
+    }
+  }
+
+  func testNoFacesDetected() {
+    guard let imageURL = Bundle.module.url(forResource: "potatoes", withExtension: "jpg") else {
+      XCTFail("Could not find required test image to run unit tests")
+      return
+    }
+    do {
+      let results:[VNFaceObservation] = try faceDetect(image: imageURL)
+      XCTAssert(results.isEmpty)
     }
     catch {
       XCTFail("error trying to run face detection")
