@@ -7,6 +7,9 @@ struct FaceDetect: ParsableCommand {
   @Argument(help:"images on which to run Vision face detection")
   var inputImages: [String] = []
 
+  @Flag(help:"Print version of this tool and underlying Vision model")
+  var version = false
+
   @Flag(help:"Print file names before running face detection")
   var verbose = false
 
@@ -14,6 +17,11 @@ struct FaceDetect: ParsableCommand {
   var quitOnError = false
 
   mutating func run() throws {
+    if self.version {
+      print(logVisionModelRevisions())
+      Foundation.exit(EXIT_SUCCESS)
+    }
+    
     for path in inputImages {
       var u = URL(fileURLWithPath: path)
       u.standardize()

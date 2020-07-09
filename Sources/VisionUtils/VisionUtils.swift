@@ -70,3 +70,14 @@ public func faceDetect(image:URL) throws -> [VNFaceObservation]
   return faceDetectionObservations
 }
 
+public func logVisionModelRevisions() -> String {
+  let fdr = VNDetectFaceRectanglesRequest().revision
+  let flr = VNDetectFaceLandmarksRequest().revision
+  let fcqr = VNDetectFaceCaptureQualityRequest().revision
+
+  return """
+  VNDetectFaceRect.revision = \(fdr)
+  VNDetectFaceLandmarks.revision = \(flr)
+  VNDetectFaceCaptureQuality.revision = \(fcqr)
+  """
+}
