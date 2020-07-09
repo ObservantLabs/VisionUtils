@@ -9,20 +9,19 @@ import Foundation
 import Vision
 import CoreGraphics
 
-struct AnnotatedImage {
+struct AnnotatedImage : Encodable {
   /// filename
   var image:String
 
   var annotations:Array<Annotation>
 }
 
-struct Annotation {
+struct Annotation : Encodable {
   var label:String
   var coordinates:Coordinates
 }
 
-struct Coordinates
-{
+struct Coordinates : Encodable {
   /// centerX with a top-left origin, in pixels
   var x:Double
   /// centerY with a top-left origin, in pixels
@@ -32,6 +31,7 @@ struct Coordinates
   /// height in pixels
   var height:Double
 }
+
 
 enum AnnotationError : Error {
   case errorGetDimensions

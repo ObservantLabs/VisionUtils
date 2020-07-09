@@ -20,12 +20,28 @@ public enum DetectionError : Error {
   case jsonEncodingError
 }
 
+public enum FaceDataFormat: String {
+  /// the JSON shape which mirroring some of VNFaceObservation properties
+  case vision
+  /// the JSON shape specified by CreateML to annotate a single image
+  case createML
+}
+
 /// Synchronously runs face detection only and returns JSON-encoded results
 /// - Parameter image: URL to an image
 /// - Returns: String with a JSON array with face detection results
-public func faceDetect(image:URL) throws -> String
+public func faceDetect(image:URL, outputFormat:FaceDataFormat = .createML) throws -> String
 {
-  let faceDetectionObservations:[VNFaceObservation] = try faceDetect(image: image)
+  switch outputFormat {
+  case .vision:
+    return try generateVisionJSON(forImage: image)
+  case .createML:
+    return try generateCreateMLJSON(forImage: image)
+  }
+}
+
+internal func generateVisionJSON(forImage image:URL) throws -> String {
+  let faceDetectionObservations:[VNFaceObservation] = try faceDetectWithVision(image: image)
   let jsonEncoder = JSONEncoder()
   let jsons = try faceDetectionObservations.map {
     (vnfo:VNFaceObservation) -> String in
@@ -42,11 +58,19 @@ public func faceDetect(image:URL) throws -> String
   return "[" + jsons.joined(separator: ",\n") + "]"
 }
 
+internal func generateCreateMLJSON(forImage image:URL) throws -> String {
+  let faceDetectionObservations:[VNFaceObservation] = try faceDetectWithVision(image: image)
+  let am = try CreateAnnotatedImage(image: image, observations: faceDetectionObservations)
+  let data = (try! JSONEncoder().encode(am))
+  let s = String(data: data, encoding: .utf8)!
+  return s
+}
+
 /// Synchronously runs face detection only and returns [VNFaceObservation]
 /// - Parameter image: file URL of an image
 /// - Throws: DetectionError
 /// - Returns: an `Array<VNFaceObservation>`
-public func faceDetect(image:URL) throws -> [VNFaceObservation]
+internal func faceDetectWithVision(image:URL) throws -> [VNFaceObservation]
 {
   // detect faces
   let fdRequestHandler = VNSequenceRequestHandler()

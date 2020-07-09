@@ -52,7 +52,7 @@ final class VisionUtilsTests: XCTestCase {
       return
     }
     do {
-      let results:[VNFaceObservation] = try faceDetect(image: imageURL)
+      let results:[VNFaceObservation] = try faceDetectWithVision(image: imageURL)
       XCTAssert(results.count == 2)
     }
     catch {
@@ -66,7 +66,7 @@ final class VisionUtilsTests: XCTestCase {
       return
     }
     do {
-      let results:[VNFaceObservation] = try faceDetect(image: imageURL)
+      let results:[VNFaceObservation] = try faceDetectWithVision(image: imageURL)
       XCTAssert(results.isEmpty)
     }
     catch {

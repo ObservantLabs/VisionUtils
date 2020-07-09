@@ -3,6 +3,9 @@ import ArgumentParser
 
 import VisionUtils
 
+extension FaceDataFormat : ExpressibleByArgument {}
+
+
 struct FaceDetect: ParsableCommand {
   @Argument(help:"images on which to run Vision face detection")
   var inputImages: [String] = []
@@ -16,6 +19,9 @@ struct FaceDetect: ParsableCommand {
   @Flag(help:"Quit running if a face detection generates an error")
   var quitOnError = false
 
+  @Option()
+  var outputFormat:FaceDataFormat = .createML
+
   mutating func run() throws {
     if self.version {
       print(logVisionModelRevisions())
@@ -27,7 +33,7 @@ struct FaceDetect: ParsableCommand {
       u.standardize()
 
       do {
-        let output:String = try faceDetect(image: u)
+        let output:String = try faceDetect(image: u, outputFormat: self.outputFormat)
         if self.verbose {
           print("Running face datect on: \(path)")
         }
