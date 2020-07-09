@@ -22,9 +22,9 @@ struct Annotation : Encodable {
 }
 
 struct Coordinates : Encodable {
-  /// centerX with a top-left origin, in pixels
+  /// centerX with a top-left origin (in pixels)
   var x:Double
-  /// centerY with a top-left origin, in pixels
+  /// centerY with a top-left origin (in pixels)
   var y:Double
   /// width in pixels
   var width:Double
@@ -73,7 +73,7 @@ func CreateAnnotatedImage(image:URL,observations:[VNFaceObservation]) throws -> 
     let boxCenterYBLOrigin = (boxBottomBLOrigin + boxTopBLOrigin) / 2.0
 
     let boxCenterXLTLOrigin = boxCenterXBLOrigin
-    let boxCenterYTLOrigin = boxHeight - boxCenterYBLOrigin
+    let boxCenterYTLOrigin = Double(imageHeight) - boxCenterYBLOrigin
 
     let c = Coordinates(x: boxCenterXLTLOrigin, y: boxCenterYTLOrigin,
                         width: boxWidth, height: boxHeight)
