@@ -7,9 +7,6 @@ extension FaceDataFormat : ExpressibleByArgument {}
 
 
 struct FaceDetect: ParsableCommand {
-  @Argument(help:"images on which to run Vision face detection")
-  var inputImages: [String] = []
-
   @Flag(help:"Print version of this tool and underlying Vision model")
   var version = false
 
@@ -22,12 +19,24 @@ struct FaceDetect: ParsableCommand {
   @Option()
   var outputFormat:FaceDataFormat = .createML
 
+  @Argument(help:"images on which to run Vision face detection")
+  var inputImages: [String] = []
+
   mutating func run() throws {
     if self.version {
       print(logVisionModelRevisions())
       Foundation.exit(EXIT_SUCCESS)
     }
-    
+
+    /// for CreateML, with multiple items, emit a JSON array containing the items.
+    let shouldExportJSONArrayMode:Bool = (outputFormat == .createML) && (inputImages.count > 1) && (verbose == false)
+    var firstItem:Bool = true
+    if shouldExportJSONArrayMode { print("[") }
+
+    // this is really not efficient, because we're rebuilding the Vision stack per image
+    // better would be to do the loop in the func that did detection
+    // or to create an object that owns the machinery and provides a stateless transform function,
+    // and map a sequence through it.
     for path in inputImages {
       var u = URL(fileURLWithPath: path)
       u.standardize()
@@ -37,7 +46,13 @@ struct FaceDetect: ParsableCommand {
         if self.verbose {
           print("Running face datect on: \(path)")
         }
+
+        if shouldExportJSONArrayMode && !firstItem { print(",") }
+
         print(output)
+
+        if firstItem { firstItem = false }
+
       }
       catch let e as DetectionError {
         // wow, this is allowed
@@ -54,6 +69,10 @@ struct FaceDetect: ParsableCommand {
           Foundation.exit(Foundation.EXIT_FAILURE)
         }
       }
+    }
+
+    if shouldExportJSONArrayMode {
+      print("]")
     }
   }
 }

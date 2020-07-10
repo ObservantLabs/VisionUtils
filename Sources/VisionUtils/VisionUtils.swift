@@ -66,7 +66,7 @@ internal func generateCreateMLJSON(forImage image:URL) throws -> String {
   return s
 }
 
-/// Synchronously runs face detection only and returns [VNFaceObservation]
+/// Synchronously runs face detection only and returns [VNFaceObservation], in order of biggest to smallest
 /// - Parameter image: file URL of an image
 /// - Throws: DetectionError
 /// - Returns: an `Array<VNFaceObservation>`
@@ -91,7 +91,11 @@ internal func faceDetectWithVision(image:URL) throws -> [VNFaceObservation]
   guard let faceDetectionObservations = fdRequest.results as? [VNFaceObservation] else {
     throw DetectionError.appleErrorObservationType
   }
-  return faceDetectionObservations
+  var sortedfdos = faceDetectionObservations.sorted { (vnfoa, vnfob) -> Bool in
+    return (vnfoa.boundingBox.width * vnfoa.boundingBox.height) <= (vnfob.boundingBox.width * vnfob.boundingBox.height)
+  }
+  sortedfdos.reverse()
+  return sortedfdos
 }
 
 public func logVisionModelRevisions() -> String {
