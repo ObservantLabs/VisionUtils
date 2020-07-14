@@ -75,9 +75,11 @@ extension VNFaceLandmarkRegion2D : Encodable
 {
   enum CodingKeys: String, CodingKey {
     case normalizedPoints
+    case precisionEstimatesPerPoint
   }
   public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     try container.encode(normalizedPoints,forKey:.normalizedPoints)
+    try container.encodeIfPresent(precisionEstimatesPerPoint,forKey:.precisionEstimatesPerPoint)
   }
 }

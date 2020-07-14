@@ -58,6 +58,10 @@ func CreateAnnotatedImage(image:URL,observations:[VNFaceObservation]) throws -> 
   let anns:[Annotation] = observations.map {
     (fo:VNFaceObservation) -> Annotation in
 
+
+    // TODO: checkout `VNImagePointForNormalizedPoint`
+    // TODO: checkout VNImageRectForNormalizedRect
+
     // get face bounding box (bottom-left origin, cooordinates normalized to 0...1)
     let bb = fo.boundingBox
 

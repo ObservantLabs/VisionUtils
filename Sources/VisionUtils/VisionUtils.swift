@@ -40,8 +40,9 @@ public func faceDetect(image:URL, outputFormat:FaceDataFormat = .createML) throw
   }
 }
 
-internal func generateVisionJSON(forImage image:URL) throws -> String {
-  let faceDetectionObservations:[VNFaceObservation] = try faceDetectWithVision(image: image)
+internal func generateVisionJSON(forImage image:URL, withLandmarks:Bool = false) throws -> String {
+  let faceDetectionObservations:[VNFaceObservation] = try faceDetectWithVision(image: image,
+                                                                               withLandmarks: withLandmarks)
   let jsonEncoder = JSONEncoder()
   let jsons = try faceDetectionObservations.map {
     (vnfo:VNFaceObservation) -> String in
@@ -70,11 +71,13 @@ internal func generateCreateMLJSON(forImage image:URL) throws -> String {
 /// - Parameter image: file URL of an image
 /// - Throws: DetectionError
 /// - Returns: an `Array<VNFaceObservation>`
-internal func faceDetectWithVision(image:URL) throws -> [VNFaceObservation]
+internal func faceDetectWithVision(image:URL,
+                                   withLandmarks shouldFindLandmarks:Bool = false) throws -> [VNFaceObservation]
 {
-  // detect faces
+  // detect face rect or maybe also landmarks
+  let fdRequest: VNImageBasedRequest = shouldFindLandmarks
+    ? VNDetectFaceLandmarksRequest() : VNDetectFaceRectanglesRequest()
   let fdRequestHandler = VNSequenceRequestHandler()
-  let fdRequest = VNDetectFaceRectanglesRequest()
   do {
     try fdRequestHandler.perform([fdRequest],
                                  onImageURL: image)
@@ -87,7 +90,7 @@ internal func faceDetectWithVision(image:URL) throws -> [VNFaceObservation]
     throw DetectionError.appleErrorMisc
   }
 
-  // safe b/c Apple API promises this result type for a VNDetectFaceRectanglesRequest request
+  // safe b/c Apple API promises this result type for our two possible request types
   guard let faceDetectionObservations = fdRequest.results as? [VNFaceObservation] else {
     throw DetectionError.appleErrorObservationType
   }

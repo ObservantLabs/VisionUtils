@@ -4,6 +4,14 @@ import Vision
 import XCTest
 @testable import VisionUtils
 
+fileprivate let shouldPrintJSON:Bool = false
+
+fileprivate func maybePrint(_ s:String) -> Void {
+  guard shouldPrintJSON else { return }
+  print(s)
+}
+
+
 final class VisionUtilsTests: XCTestCase {
   func testExample() {
     // This is an example of a functional test case.
@@ -24,7 +32,7 @@ final class VisionUtilsTests: XCTestCase {
     }
     do {
       let result:String = try faceDetect(image: imageURL)
-      print(result)
+      maybePrint(result)
     }
     catch {
       XCTFail("error trying to run face detection")
@@ -38,7 +46,7 @@ final class VisionUtilsTests: XCTestCase {
     }
     do {
       let result:String = try faceDetect(image: imageURL)
-      print(result)
+      maybePrint(result)
     }
     catch {
       XCTFail("error trying to run face detection")
@@ -54,11 +62,38 @@ final class VisionUtilsTests: XCTestCase {
     do {
       let results:[VNFaceObservation] = try faceDetectWithVision(image: imageURL)
       XCTAssert(results.count == 2)
+
+      // quick output the string
+      let data:Data = try! JSONEncoder().encode(results)
+      let out:String = String(data: data, encoding: .utf8)!
+      maybePrint(out)
+
     }
     catch {
       XCTFail("error trying to run face detection")
     }
   }
+
+  func testFacesDetecWithLandmarkst() {
+    guard let imageURL = Bundle.module.url(forResource: "soccerFans", withExtension: "jpg") else {
+      XCTFail("Could not find required test image to run unit tests")
+      return
+    }
+    do {
+      let results:[VNFaceObservation] = try faceDetectWithVision(image: imageURL, withLandmarks: true)
+      XCTAssert(results.count == 2)
+
+      // quick output the string
+      let data:Data = try! JSONEncoder().encode(results)
+      let out:String = String(data: data, encoding: .utf8)!
+      maybePrint(out)
+
+    }
+    catch {
+      XCTFail("error trying to run face detection")
+    }
+  }
+
 
   func testNoFacesDetected() {
     guard let imageURL = Bundle.module.url(forResource: "potatoes", withExtension: "jpg") else {
