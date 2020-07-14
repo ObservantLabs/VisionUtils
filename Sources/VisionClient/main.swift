@@ -16,7 +16,7 @@ struct FaceDetect: ParsableCommand {
   @Flag(help:"Quit running if a face detection generates an error")
   var quitOnError = false
 
-  @Option(help:"Controls JSON format. In CreateML mode, will emit a JS dictionary if given multiple images")
+  @Option(help:"createML or vision. Controls JSON format. In CreateML mode, will emit a JS dictionary if given multiple images")
   var outputFormat:FaceDataFormat = .createML
 
   @Option()
