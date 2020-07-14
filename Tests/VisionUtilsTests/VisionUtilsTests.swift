@@ -4,7 +4,7 @@ import Vision
 import XCTest
 @testable import VisionUtils
 
-fileprivate let shouldPrintJSON:Bool = false
+fileprivate let shouldPrintJSON:Bool = true
 
 fileprivate func maybePrint(_ s:String) -> Void {
   guard shouldPrintJSON else { return }
@@ -88,6 +88,20 @@ final class VisionUtilsTests: XCTestCase {
       let out:String = String(data: data, encoding: .utf8)!
       maybePrint(out)
 
+    }
+    catch {
+      XCTFail("error trying to run face detection")
+    }
+  }
+
+  func testCreateJSONFacesDetecWithLandmarkst() {
+    guard let imageURL = Bundle.module.url(forResource: "soccerFans", withExtension: "jpg") else {
+      XCTFail("Could not find required test image to run unit tests")
+      return
+    }
+    do {
+      let output:String = try faceDetect(image: imageURL, outputFormat: .createML)
+      maybePrint(output)
     }
     catch {
       XCTFail("error trying to run face detection")

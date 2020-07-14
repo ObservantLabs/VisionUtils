@@ -30,19 +30,23 @@ public enum FaceDataFormat: String {
 /// Synchronously runs face detection only and returns JSON-encoded results
 /// - Parameter image: URL to an image
 /// - Returns: String with a JSON array with face detection results
-public func faceDetect(image:URL, outputFormat:FaceDataFormat = .createML) throws -> String
+public func faceDetect(image:URL,
+                       outputFormat:FaceDataFormat = .createML,
+                       withLandmarks shouldDetectLandmarks:Bool = false) throws -> String
 {
   switch outputFormat {
   case .vision:
-    return try generateVisionJSON(forImage: image)
+    return try generateVisionJSON(forImage: image, withLandmarks: shouldDetectLandmarks)
   case .createML:
-    return try generateCreateMLJSON(forImage: image)
+    return try generateCreateMLJSON(forImage: image, withLandmarks: shouldDetectLandmarks)
   }
 }
 
-internal func generateVisionJSON(forImage image:URL, withLandmarks:Bool = false) throws -> String {
+internal func generateVisionJSON(forImage image:URL,
+                                 withLandmarks shouldDetectLandmarks:Bool = false) throws -> String
+{
   let faceDetectionObservations:[VNFaceObservation] = try faceDetectWithVision(image: image,
-                                                                               withLandmarks: withLandmarks)
+                                                                               withLandmarks: shouldDetectLandmarks)
   let jsonEncoder = JSONEncoder()
   let jsons = try faceDetectionObservations.map {
     (vnfo:VNFaceObservation) -> String in
@@ -59,8 +63,11 @@ internal func generateVisionJSON(forImage image:URL, withLandmarks:Bool = false)
   return "[" + jsons.joined(separator: ",\n") + "]"
 }
 
-internal func generateCreateMLJSON(forImage image:URL) throws -> String {
-  let faceDetectionObservations:[VNFaceObservation] = try faceDetectWithVision(image: image)
+internal func generateCreateMLJSON(forImage image:URL,
+                                   withLandmarks shouldDetectLandmarks:Bool = false) throws -> String
+{
+  let faceDetectionObservations:[VNFaceObservation] = try faceDetectWithVision(image: image,
+                                                                               withLandmarks: shouldDetectLandmarks)
   let am = try CreateAnnotatedImage(image: image, observations: faceDetectionObservations)
   let data = (try! JSONEncoder().encode(am))
   let s = String(data: data, encoding: .utf8)!

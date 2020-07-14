@@ -16,8 +16,11 @@ struct FaceDetect: ParsableCommand {
   @Flag(help:"Quit running if a face detection generates an error")
   var quitOnError = false
 
-  @Option()
+  @Option(help:"Controls JSON format. In CreateML mode, will emit a JS dictionary if given multiple images")
   var outputFormat:FaceDataFormat = .createML
+
+  @Option()
+  var detectLandmarks:Bool = true
 
   @Argument(help:"images on which to run Vision face detection")
   var inputImages: [String] = []
@@ -42,7 +45,7 @@ struct FaceDetect: ParsableCommand {
       u.standardize()
 
       do {
-        let output:String = try faceDetect(image: u, outputFormat: self.outputFormat)
+        let output:String = try faceDetect(image: u, outputFormat: self.outputFormat, withLandmarks: detectLandmarks)
         if self.verbose {
           print("Running face datect on: \(path)")
         }

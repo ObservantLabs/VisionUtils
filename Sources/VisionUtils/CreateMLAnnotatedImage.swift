@@ -19,6 +19,9 @@ struct AnnotatedImage : Encodable {
 struct Annotation : Encodable {
   var label:String
   var coordinates:Coordinates
+  /// raw JSON for `VNFaceObservation.landmarks`
+  /// not converted to top-left image coordinates
+  var normalizedLandmarks:VNFaceLandmarks2D?
 }
 
 /// coordinates for a rect
@@ -68,8 +71,8 @@ fileprivate func createAnnotation(fromObservation fo:VNFaceObservation,
 {
   let (imageWidth,imageHeight) = imageSize
 
-  // TODO: checkout `VNImagePointForNormalizedPoint`
-  // TODO: checkout VNImageRectForNormalizedRect
+  // TODO: checkout `VNImagePointForNormalizedPoint`, `VNImageRectForNormalizedRect`
+  // do they handle just renormalization or also the change in origin?
 
 
   // get face bounding box (bottom-left origin, cooordinates normalized to 0...1)
@@ -92,7 +95,7 @@ fileprivate func createAnnotation(fromObservation fo:VNFaceObservation,
   let c = Coordinates(x: boxCenterXLTLOrigin, y: boxCenterYTLOrigin,
                       width: boxWidth, height: boxHeight)
 
-  let ann = Annotation(label: "face", coordinates: c)
+  let ann = Annotation(label: "face", coordinates: c, normalizedLandmarks: fo.landmarks)
   return ann
 }
 
