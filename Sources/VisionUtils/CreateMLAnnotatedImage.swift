@@ -19,8 +19,11 @@ struct AnnotatedImage : Encodable {
 struct Annotation : Encodable {
   var label:String
   var coordinates:Coordinates
+
   /// raw JSON for `VNFaceObservation.landmarks`
-  /// not converted to top-left image coordinates
+  /// not converted to top-left image coordinates.
+  /// this is not part of the official CreateML JSON format, but an extension I'm adding to capture this data.
+
   var normalizedLandmarks:VNFaceLandmarks2D?
 }
 
